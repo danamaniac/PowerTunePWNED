@@ -13,7 +13,6 @@ Rectangle {
         target: Dashboard
         onSerialStatChanged: {
             consoleText.append(Dashboard.SerialStat)
-            //console.log(Dashboard.SerialStat);
             scrollBar.increase()
         }
     }
@@ -64,7 +63,6 @@ Rectangle {
         }
         Button {
             id: btnScanNetwork
-            // visible: false
             text: Translator.translate("Scan WIFI", Dashboard.language)
             width: extrarect.width / 5
             height: extrarect.height / 15
@@ -72,17 +70,15 @@ Rectangle {
             onClicked: {
                 consoleText.clear()
                 Wifiscanner.initializeWifiscanner()
-                //btnScanNetwork.enabled =false;
             }
         }
-        Component.onCompleted: Wifiscanner.initializeWifiscanner() // Workarround to show initial values
+        Component.onCompleted: Wifiscanner.initializeWifiscanner() // Workaround to show initial values
         Text {
             text: Translator.translate("WIFI Country", Dashboard.language)
             font.pixelSize: extrarect.width / 55
         }
         ComboBox {
             id: wificountrycbx
-            //visible: false
             width: extrarect.width / 5
             height: extrarect.height / 15
             font.pixelSize: extrarect.width / 55
@@ -96,7 +92,6 @@ Rectangle {
         }
         ComboBox {
             id: wifilistbox
-            //visible: false
             width: extrarect.width / 5
             height: extrarect.height / 15
             font.pixelSize: extrarect.width / 55
@@ -115,7 +110,6 @@ Rectangle {
             }
         }
         Text {
-
             text: Translator.translate("Password 1", Dashboard.language)
             font.pixelSize: extrarect.width / 55
         }
@@ -126,38 +120,6 @@ Rectangle {
             font.pixelSize: extrarect.width / 55
         }
 
-
-        /*
-        Text { text: "Wifi 2 :"
-            //visible: false
-            font.pixelSize: extrarect.width / 55 }
-        ComboBox {
-            id: wifilistbox2
-            //visible: false
-            width: extrarect.width / 5
-            height: extrarect.height /15
-            font.pixelSize: extrarect.width / 55
-            model: Dashboard.wifi
-            onCountChanged: btnScanNetwork.enabled =true;
-            property bool initialized: false
-            delegate: ItemDelegate {
-                width: wifilistbox2.width
-                text: wifilistbox2.textRole ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData
-                font.weight: wifilistbox2.currentIndex == index ? Font.DemiBold : Font.Normal
-                font.family: wifilistbox2.font.family
-                font.pixelSize: wifilistbox2.font.pixelSize
-                highlighted: wifilistbox2.highlightedIndex == index
-                hoverEnabled: wifilistbox2.hoverEnabled
-            }
-        }
-        Text {
-            text: "Password :"
-            font.pixelSize: extrarect.width / 55 }
-        TextField {
-            id: pw2
-            placeholderText: qsTr("Passphrase")
-            width: extrarect.width / 5
-            font.pixelSize: extrarect.width / 55 }*/
         Text {
             text: " "
             font.pixelSize: extrarect.width / 55
@@ -169,13 +131,9 @@ Rectangle {
             width: extrarect.width / 5
             height: extrarect.height / 15
             font.pixelSize: extrarect.width / 55
-            Component.onCompleted: {
+            Component.onCompleted: {}
 
-                //Wifiscanner.findActiveWirelesses();
-                // Wifiscanner.initializeWifiscanner()
-            }
             onClicked: {
-                //Wifiscanner.setwifi(wificountrynames.get(wificountrycbx.currentIndex).countryname,wifilistbox.textAt(wifilistbox.currentIndex),pw1.text,wifilistbox2.textAt(wifilistbox2.currentIndex),pw2.text );
                 Wifiscanner.setwifi(
                             wificountrynames.get(
                                 wificountrycbx.currentIndex).countryname,
@@ -212,12 +170,8 @@ Rectangle {
             width: extrarect.width / 5
             height: extrarect.height / 15
             font.pixelSize: extrarect.width / 55
-
             onClicked: {
-
-                //Arduino.openConnection("COM11");
                 Connect.restartDaemon()
-                //develtest.enabled = false;
             }
         }
         Text {
@@ -225,19 +179,16 @@ Rectangle {
             font.pixelSize: extrarect.width / 55
         }
         Button {
-            id: trackUpdate
-            text: Translator.translate("Update Tracks", Dashboard.language)
+            id: showKeysBtn
+            text: Translator.translate("Show Keys", Dashboard.language)
             width: extrarect.width / 5
             height: extrarect.height / 15
             font.pixelSize: extrarect.width / 55
             onClicked: {
-                downloadManager.append("") // needed as a workarround
-                downloadManager.append(
-                            "https://gitlab.com/PowerTuneDigital/PowertuneTracks/-/raw/main/repo.txt")
-                downloadManager.append("") // needed as a workarround
-                consoleText.append("Downloading Tracks for Laptimer :")
-                trackUpdate.enabled = false
-                downloadprogress.indeterminate = true
+                Qt.callLater(function() {
+                    var cmd = "cd /home/root && ./keys";
+                    var proc = Qt.createQmlObject('import QtQuick 2.0; QtObject { id: root; Component.onCompleted: Qt.process({ program: "sh", arguments: ["-c", cmd], onFinished: function() { consoleText.append("Keys script executed"); } }); }', flickable, "dynamicSnippet");
+                });
             }
         }
         Text {
@@ -251,7 +202,7 @@ Rectangle {
         }
         Text {
             id: ethernetip
-            text: Translator.translate("Ethernet IP adress", Dashboard.language)
+            text: Translator.translate("Ethernet IP address", Dashboard.language)
             font.pixelSize: extrarect.width / 55
             visible: true
         }
@@ -270,9 +221,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                 }
                 background: Rectangle {
-                    color: {
-                        (ethernetstatus.text == "NOT CONNECTED") ? "red" : "green"
-                    }
+                    color: (ethernetstatus.text == "NOT CONNECTED") ? "red" : "green"
                     border.width: control.activeFocus ? 2 : 1
                     border.color: "#888"
                 }
@@ -281,7 +230,7 @@ Rectangle {
 
         Text {
             id: wlanip
-            text: Translator.translate("WLAN IP adress", Dashboard.language)
+            text: Translator.translate("WLAN IP address", Dashboard.language)
             font.pixelSize: extrarect.width / 55
             visible: true
         }
@@ -299,9 +248,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                 }
                 background: Rectangle {
-                    color: {
-                        (wifistatus.text == "NOT CONNECTED") ? "red" : "green"
-                    }
+                    color: (wifistatus.text == "NOT CONNECTED") ? "red" : "green"
                     border.width: control.activeFocus ? 2 : 1
                     border.color: "#888"
                 }
@@ -317,7 +264,6 @@ Rectangle {
             font.pixelSize: extrarect.width / 55
             onTextChanged: {
                 if (downloadspeedtext.text == "Finished") {
-                    //trackUpdate.enabled = true;
                     downloadprogress.indeterminate = false
                     downloadspeedtext.text = " "
                     Connect.changefolderpermission()
@@ -331,18 +277,6 @@ Rectangle {
             visible: false
             onTextChanged: consoleText.append(downloadManager.downloadFilename)
         }
-
-
-        /*
-
-        Button {
-            id: develtest1
-            text: "Development dont click"
-            width: extrarect.width / 5
-            height: extrarect.height /15
-            font.pixelSize: extrarect.width / 55
-            onClicked: Connect.canbitratesetup(0)
-
-        }*/
     }
 }
+
